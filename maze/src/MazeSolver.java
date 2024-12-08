@@ -1,0 +1,6 @@
+class MazeSolver
+{
+    protected MazeSolver()
+    {
+    }
+}
