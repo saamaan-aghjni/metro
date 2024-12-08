@@ -105,7 +105,7 @@ class Grid
                 if(j==max_col-1) b+="|";
                 else
                 {
-                    if(!cells[i][j].getNeighbor(cells[i][j+1]).hasPath()) b+="|";
+                    if(!cells[i][j].getNeighbor(Direction.EAST).hasPath()) b+="|";
 else b+=" ";
                 }
 
@@ -115,8 +115,8 @@ else b+=" ";
             b+="\n|";
             for(int j=0; j<max_col; j++)
             {
-                if(!cells[i][j].getNeighbor(cells[i+1][j]).hasPath()) b+="---|";
-                else if(cells[i][j].getNeighbor(cells[i+1][j]).hasPath()) b+="   |";
+                if(!cells[i][j].getNeighbor(Direction.SOUTH).hasPath()) b+="---|";
+                else if(cells[i][j].getNeighbor(Direction.SOUTH).hasPath()) b+="   |";
 
             }
 }

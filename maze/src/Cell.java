@@ -24,14 +24,23 @@ enum Direction{
 	}
 }
 
-record Link(Direction dir, boolean hasPath)
-{
 
-}
 
 class Cell
 {
-    private Map<Cell, Link> neighbors=new HashMap<>();
+        public class Link
+        {
+            private Cell neighbor;
+            private boolean hasPath;
+            Link(Cell neighbor, Boolean hasPath)
+            {
+                this.hasPath=hasPath;
+                this.neighbor = neighbor;
+            }
+            public Cell neighbor() { return neighbor; }
+            public boolean hasPath() { return hasPath; }
+        }
+    private Map<Direction, Link> neighbors=new HashMap<>();
 	private int row, col;
     public Cell(int row, int col)
     {
@@ -42,61 +51,35 @@ class Cell
 
     public void addNeighbor(Cell other, Direction dir, boolean hasPath)
     {
-    if(neighbors.containsKey(other))
+    if(neighbors.containsKey(dir))
         return; 
-        Link l=new Link(dir, hasPath);
-        neighbors.put(other, l);
+        Link l=new Link(other,  hasPath);
+        neighbors.put(dir, l);
         other.addNeighbor(this, Direction.getOpositeOf(dir), hasPath);
     }
 	public void unlinkNeighbor(Cell other, Direction dir)
 	{
-        other.neighbors.replace(this, new Link(Direction.getOpositeOf(dir), false));
-        neighbors.replace(other, new Link(dir, false));
+        other.neighbors.replace(Direction.getOpositeOf(dir), new Link(this, false));
+        neighbors.replace(dir, new Link(other, false));
     }
-/*
-	public void linkNeighbor(Direction dir)
+	public void linkNeighbor(Cell other, Direction dir)
 	{
-        try 
-	        {
-            neighbors.get(new Link(Direction.getOpositeOf(dir) , false)).neighbors.replace(this, new Link(Direction.getOpositeOf(dir), true));
-            neighbors.replace(neighbors.get(new Link(dir, false)), new Link(dir, true));
-        }
-        catch(Exception e)
-        {
-            System.out.println(e);
-        }
+        other.neighbors.replace(Direction.getOpositeOf(dir),  new Link(this, true));
+        neighbors.replace(dir, new Link(other, true));
     }
-	public void unlinkNeighbor(Direction dir)
+/*	public void linkNeighbor(Cell other)
 	{
-        try {
-            neighbors.get(new Link(Direction.getOpositeOf(dir) , true)).neighbors.replace(this, new Link(Direction.getOpositeOf(dir), false));
-            neighbors.replace(neighbors.get(new Link(dir, true)), new Link(dir, false));
-        }
-        catch(Exception e)
-        {
-            System.out.println(e);
-        }
+        Direction dir=neighbors.get(other).dir();
+        other.neighbors.replace(Direction.getdir, new Link(Direction.getOpositeOf(dir), true));
+        neighbors.replace(other, new Link(dir, true));
     }
 */
 
-	public void linkNeighbor(Cell other, Direction dir)
+    public Link getNeighbor(Direction dir)
 	{
-        other.neighbors.replace(this, new Link(Direction.getOpositeOf(dir), true));
-        neighbors.replace(other, new Link(dir, true));
-    }
-	public void linkNeighbor(Cell other)
-	{
-        Direction dir=neighbors.get(other).dir();
-        other.neighbors.replace(this, new Link(Direction.getOpositeOf(dir), true));
-        neighbors.replace(other, new Link(dir, true));
-    }
-
-
-    public Link getNeighbor(Cell other)
-	{
-		return neighbors.containsKey(other) ? neighbors.get(other) : null;
+		return neighbors.containsKey(dir) ? neighbors.get(dir) : null;
 	}
-	public Set<Cell> getNeighbors()
+	public Set<Direction> getNeighbors()
 	{
 		return neighbors.keySet();
 	}
@@ -108,7 +91,7 @@ public String toString()
 String st="";
 st+="Cell at ("+getRow()+", "+getCol()+")\n    Number of neighbors: "+neighbors.size()+"\n";
 for(var neighbor: neighbors.keySet())
-    st+="\t\tNeighbor at ("+neighbor.getRow()+", "+neighbor.getCol()+"), direction "+neighbors.get(neighbor).dir()+", has path? "+neighbors.get(neighbor).hasPath()+"\n";
+    st+="\t\tNeighbor at ("+neighbors.get(neighbor).neighbor().getRow()+", "+neighbors.get(neighbor).neighbor().getCol()+"), direction "+neighbor+", has path? "+neighbors.get(neighbor).hasPath()+"\n";
 return st;
 }
 }
