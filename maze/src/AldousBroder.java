@@ -17,6 +17,13 @@ class ABNode
     public int getCol() { return col; }
     public boolean visited() { return visited; }
     public void setVisited() { visited=true; }
+    @Override
+    public boolean equals(Object other)
+    {
+        if(other==null || !(other instanceof ABNode)) return false;
+        ABNode oth=(ABNode)other;
+        return oth.row == this.row && oth.col == this.col ;
+    }
 }
 
 class AldousBroder extends MazeGenerator
@@ -28,14 +35,32 @@ class AldousBroder extends MazeGenerator
         ArrayList<ABNode> nodes=new ArrayList<>();
         for(int i=0; i<grid.getRow(); i++)
             for(int j=0; j<grid.getCol(); j++)
-                nodes.add(new ABNode(i, j));
-        ABNode current=null;
-    Cell currentCell=null;
+                nodes.add(new ABNode(i+1, j+1));
+        ABNode current =  nodes.get(rand.nextInt(0, nodes.size()));
+            current.setVisited();
         while(nodes.stream().filter(e -> e.visited() ==false).count()>0)
         {
-            current = nodes.get(rand.nextInt(0, nodes.size()));
-            if(current.visited()==false) grid.link(current.getRow()-1, current.getCol()-1, Direction.values()[rand.nextInt(0,Direction.values().length)]);
+            var neighborDir=Direction.values()[rand.nextInt(0, 4)];
+            Cell.Link linkNeighbor=grid.getNeighborTo(current.getRow(), current.getCol(), neighborDir);
+            if(linkNeighbor==null) continue;
+Cell neighbor=linkNeighbor.neighbor();
+
+//            try 
+{
+
+                int ABNodeNeighbor=nodes.indexOf(new ABNode(neighbor.getRow(), neighbor.getCol()));
+if(nodes.get(ABNodeNeighbor).visited()==false)
+                grid.link(current.getRow()-1, current.getCol()-1, neighborDir);
+
+            current=nodes.get(ABNodeNeighbor);
+
             current.setVisited();
+
+            }
+//            catch(Exception e)
+            {
+                continue;
+            }
         }
     }
 }

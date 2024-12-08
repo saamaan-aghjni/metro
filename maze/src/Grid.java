@@ -125,6 +125,11 @@ else b+=" ";
     }
     int getRow() { return max_row; }
     int getCol() { return max_col; }
+    public Cell.Link getNeighborTo(int row, int col, Direction dir)
+    {
+        if(row<0 || col<0 || row>max_row || col>max_col) return null;
+        return cells[row-1][col-1].getNeighbor(dir);
+    }
     public Cell cellAt(int row, int col)
     {
         if(row<0 || row>this.max_row || col<0 || col>this.max_col) return null; //out of bounds
