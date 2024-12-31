@@ -9,7 +9,7 @@ class Grid
         cells=new Cell[max_row][max_col];
         for(int i=0; i<max_row; i++)
         for(int j=0; j<max_col; j++)
-            cells[i][j]=new Cell(i+1, j+1);
+            cells[i][j]=new Cell(i, j);
         initCells();
     }
     void initCells()
@@ -25,20 +25,20 @@ class Grid
                     cells[i][j].addNeighbor(cells[i][j-1], Direction.WEST, false);
                 if(j+1<max_col) 
                     cells[i][j].addNeighbor(cells[i][j+1], Direction.EAST, false);
-                if(i-1>=0 && j-1>=0) 
-                    cells[i][j].addNeighbor(cells[i-1][j-1], Direction.NORTHWEST, false);
-                if(i-1>=0 && j+1<max_col)
-                    cells[i][j].addNeighbor(cells[i-1][j+1], Direction.NORTHEAST, false);
-                if(i+1<max_row && j+1<max_col)
-                    cells[i][j].addNeighbor(cells[i+1][j+1], Direction.SOUTHEAST, false);
-                if(i+1<max_row && j-1>=0)
-                    cells[i][j].addNeighbor(cells[i+1][j-1], Direction.SOUTHWEST, false);
+                // if(i-1>=0 && j-1>=0) 
+                    // cells[i][j].addNeighbor(cells[i-1][j-1], Direction.NORTHWEST, false);
+                // if(i-1>=0 && j+1<max_col)
+                    // cells[i][j].addNeighbor(cells[i-1][j+1], Direction.NORTHEAST, false);
+                // if(i+1<max_row && j+1<max_col)
+                    // cells[i][j].addNeighbor(cells[i+1][j+1], Direction.SOUTHEAST, false);
+                // if(i+1<max_row && j-1>=0)
+                    // cells[i][j].addNeighbor(cells[i+1][j-1], Direction.SOUTHWEST, false);
                 }
     }
 
  
     void link(int row1, int col1, Direction dir)
-    {
+    {        
         if(row1>=0 && row1<=max_row && col1>=0 && col1<max_col)
         {
             Cell other=null;
@@ -50,14 +50,14 @@ class Grid
                 other=cells[row1][col1-1];
             if(dir==Direction.EAST && col1<max_col-1)
                 other=cells[row1][col1+1];
-            if(dir==Direction.NORTHWEST &&  row1>0 && col1>0)
-                other=cells[row1-1][col1-1];
-            if(dir==Direction.NORTHEAST && col1<max_col-1 && row1>0)
-                other=cells[row1-1][col1+1];
-            if(dir==Direction.SOUTHWEST &&  row1<max_row-1 && col1>0)
-                other=cells[row1+1][col1-1];
-            if(dir==Direction.SOUTHEAST && col1<max_col+1 && row1<max_row+1)
-                other=cells[row1+1][col1+1];
+            //if(dir==Direction.NORTHWEST &&  row1>0 && col1>0)
+                //other=cells[row1-1][col1-1];
+            //if(dir==Direction.NORTHEAST && col1<max_col-1 && row1>0)
+                //other=cells[row1-1][col1+1];
+            //if(dir==Direction.SOUTHWEST &&  row1<max_row-1 && col1>0)
+                //other=cells[row1+1][col1-1];
+            //if(dir==Direction.SOUTHEAST && col1<max_col+1 && row1<max_row+1)
+                //other=cells[row1+1][col1+1];
 
             if(other!=null)
                 cells[row1][col1].linkNeighbor(other, dir);
@@ -77,15 +77,15 @@ class Grid
                 other=cells[row1][col1-1];
             if(dir==Direction.EAST && col1<max_col-1)
                 other=cells[row1][col1+1];
-            if(dir==Direction.NORTHWEST &&  row1>0 && col1>0)
-                other=cells[row1-1][col1-1];
-            if(dir==Direction.NORTHEAST && col1<max_col-1 && row1<max_row-1)
-                other=cells[row1-1][col1+1];
+            //if(dir==Direction.NORTHWEST &&  row1>0 && col1>0)
+                //other=cells[row1-1][col1-1];
+            //if(dir==Direction.NORTHEAST && col1<max_col-1 && row1<max_row-1)
+                //other=cells[row1-1][col1+1];
 
-            if(dir==Direction.SOUTHWEST &&  row1<max_row-1 && col1>0)
-                other=cells[row1+1][col1-1];
-            if(dir==Direction.SOUTHEAST && col1<max_col+1 && row1<max_row+1)
-                other=cells[row1+1][col1+1];
+            //if(dir==Direction.SOUTHWEST &&  row1<max_row-1 && col1>0)
+                //other=cells[row1+1][col1-1];
+            //if(dir==Direction.SOUTHEAST && col1<max_col+1 && row1<max_row+1)
+                //other=cells[row1+1][col1+1];
             if(other!=null)
                 cells[row1][col1].unlinkNeighbor(other, dir);
         }
@@ -115,7 +115,7 @@ else b+=" ";
             b+="\n|";
             for(int j=0; j<max_col; j++)
             {
-                if(!cells[i][j].getNeighbor(Direction.SOUTH).hasPath()) b+="---|";
+                if(!cells[i][j].getNeighbor(Direction.SOUTH).hasPath()) b+="----|";
                 else if(cells[i][j].getNeighbor(Direction.SOUTH).hasPath()) b+="   |";
 
             }
@@ -128,7 +128,10 @@ else b+=" ";
     public Cell.Link getNeighborTo(int row, int col, Direction dir)
     {
         if(row<0 || col<0 || row>max_row || col>max_col) return null;
-        return cells[row-1][col-1].getNeighbor(dir);
+        return cells[row][col].getNeighbor(dir);
+    }
+    public Cell cellAt(DungeonPoint p) {
+        return DungeonUtil.inRangePoint(p, new DungeonPoint(0, 0), new DungeonPoint(getRow(), getCol())) ? cells[p.getX()][p.getY()] : null;
     }
     public Cell cellAt(int row, int col)
     {

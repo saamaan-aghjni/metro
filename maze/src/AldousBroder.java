@@ -1,5 +1,9 @@
-import java.util.Random;
+// Is buggy, can't break out of the loop.  Fix later
+
 import java.util.ArrayList;
+// import java.util.concurrent.Delayed;
+
+import java.util.stream.IntStream;
 
 
 class ABNode
@@ -27,40 +31,63 @@ class ABNode
 }
 
 class AldousBroder extends MazeGenerator
-{
-    private static Random rand=new Random();
-    private AldousBroder() { }
-    public static void generate(Grid  grid)
-    {
-        ArrayList<ABNode> nodes=new ArrayList<>();
-        for(int i=0; i<grid.getRow(); i++)
-            for(int j=0; j<grid.getCol(); j++)
-                nodes.add(new ABNode(i+1, j+1));
-        ABNode current =  nodes.get(rand.nextInt(0, nodes.size()));
-            current.setVisited();
-        while(nodes.stream().filter(e -> e.visited() ==false).count()>0)
+{    
+    ArrayList<Boolean> visited=null;
+    @Override
+    public void generate(Grid  grid, DungeonPoint start, DungeonPoint end)
+    {        
+        visited = new ArrayList<>();
+        DungeonUtil.fillArray(visited, grid.getRow()*grid.getCol()+1, false);
+System.out.println("Called "+start.toString()+" and "+end.toString()+" with indices of "+DungeonUtil.positionToIndex(start, grid.getRow())+" and "+DungeonUtil.positionToIndex(end, grid.getRow()));
+        boolean done = false;
+        int x=start.getX() >= end.getX() ? start.getX() : random.nextInt(start.getX(), end.getX());
+        int y=start.getY() >= end.getY() ? start.getY() : random.nextInt(start.getY(), end.getY());
+        Cell current = grid.cellAt(x, y);
+         visited.set(DungeonUtil.positionToIndex(new DungeonPoint(x,y), grid.getRow()), true);
+         /* done =IntStream.range(DungeonUtil.positionToIndex(start, grid.getRow()), DungeonUtil.positionToIndex(end, grid.getRow())).anyMatch(a -> { 
+            System.out.println("point at "+a +" "+visited.get(a));
+            return visited.get(a)== false; 
+    });        
+    */
+    /* done =IntStream.range(DungeonUtil.positionToIndex(start, grid.getRow()), DungeonUtil.positionToIndex(end, grid.getRow())).anyMatch(a -> { 
+        // System.out.println("point at "+a);
+        return visited.get(a)==false; 
+});        */
+System.out.println(done);
+        while(!done)
         {
-            var neighborDir=Direction.values()[rand.nextInt(0, 4)];
-            Cell.Link linkNeighbor=grid.getNeighborTo(current.getRow(), current.getCol(), neighborDir);
-            if(linkNeighbor==null) continue;
-Cell neighbor=linkNeighbor.neighbor();
-
-//            try 
-{
-
-                int ABNodeNeighbor=nodes.indexOf(new ABNode(neighbor.getRow(), neighbor.getCol()));
-if(nodes.get(ABNodeNeighbor).visited()==false)
-                grid.link(current.getRow()-1, current.getCol()-1, neighborDir);
-
-            current=nodes.get(ABNodeNeighbor);
-
-            current.setVisited();
-
-            }
-//            catch(Exception e)
-            {
+            var neighbours = current.getNeighbors().toArray();
+            var neighbourDir=(Direction)(neighbours[random.nextInt(0, neighbours.length)]);
+            Cell neighbour = current.getNeighbor(neighbourDir).neighbor();
+             if(!DungeonUtil.inRangePoint(new DungeonPoint(neighbour.getRow(), neighbour.getCol()), start, end)) {
                 continue;
             }
+            
+            System.out.println("Current "+current.getRow()+" "+current.getCol()+" "+DungeonUtil.positionToIndex(new DungeonPoint(current.getRow(), current.getCol()), grid.getRow())+" neighbour at "+neighbour.getRow() +" "+neighbour.getCol()+" with an index of "+DungeonUtil.positionToIndex(new DungeonPoint(neighbour.getRow(), neighbour.getCol()), y));
+
+            grid.link(current.getRow(), current.getCol(), neighbourDir);
+System.out.println("linkage done!");            
+            if(!visited.get(DungeonUtil.positionToIndex(new DungeonPoint(neighbour.getRow(), neighbour.getCol()), grid.getRow()))) {
+                current = neighbour;
+                 visited.set(DungeonUtil.positionToIndex(new DungeonPoint(current.getRow(), current.getCol()), grid.getRow()), true);
+                // visited.remove(DungeonUtil.positionToIndex(new DungeonPoint(current.getRow(), current.getCol()), grid.getRow()));
+
+            }
+              else {
+                x=start.getX() >= end.getX() ? start.getX() : random.nextInt(start.getX(), end.getX());
+                y=start.getY() >= end.getY() ? start.getY() : random.nextInt(start.getY(), end.getY());
+                current = grid.cellAt(x, y);
+                System.out.println("Setting "+ current.getRow()+" "+current.getCol()+" at "+DungeonUtil.positionToIndex(new DungeonPoint(current.getRow(), current.getCol()), grid.getRow())+" to true");
+                 visited.set(DungeonUtil.positionToIndex(new DungeonPoint(current.getRow(), current.getCol()), grid.getRow()), true);
+                
+            }
+            done =IntStream.range(DungeonUtil.positionToIndex(start, grid.getRow()), DungeonUtil.positionToIndex(end, grid.getRow())).allMatch(a -> { 
+                //  System.out.println("point at "+a);
+                return a <= visited.size() && visited.get(a)==true; 
+        });
+        
         }
+        
+        visited = null;
     }
 }

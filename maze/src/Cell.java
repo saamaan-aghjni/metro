@@ -1,6 +1,30 @@
-import java.util.Set;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+enum Terrain {    
+    DIRT(0.0, 'd'),
+    CONCRETE(0.2, 'c'),
+    RAIL(0.3, 'r'),
+    MUSHROOM_PATCH(0.2, 'm'),
+    WOODEN_DOOR(1.0, 'w'),
+    METAL_DOOR(1.0, 'm'),
+    STONE_WALL(1.0, 'W');
+    double cost;
+    char symbol;
+    private Terrain(double cost, char c) {
+        this.cost = cost;
+        this.symbol = c;
+    }
+    public  static Map<Terrain, Boolean> PASSABLE = Map.of(
+        DIRT, true,
+        CONCRETE, true,
+        RAIL, true
+    );
+
+    public char getSymbol() { return symbol; }
+    public double getCost() { return cost; }
+}
 enum Direction{
     EAST,
     WEST,
@@ -41,29 +65,36 @@ class Cell
             public boolean hasPath() { return hasPath; }
         }
     private Map<Direction, Link> neighbors=new HashMap<>();
-	private int row, col;
+    private int row, col;
+    Terrain terrain;
     public Cell(int row, int col)
     {
-		this.row = row;
-		this.col = col;
-
+        this.row = row;
+        this.col = col;
+        terrain = Terrain.DIRT; // default
     }
-
+    public Terrain getTerrain() { 
+        return terrain;
+    }
+    public void setTerrain(Terrain ter) {
+        this.terrain = ter;
+    }
     public void addNeighbor(Cell other, Direction dir, boolean hasPath)
     {
-    if(neighbors.containsKey(dir))
-        return; 
+        if(neighbors.containsKey(dir)) {
+            return; 
+    }
         Link l=new Link(other,  hasPath);
         neighbors.put(dir, l);
         other.addNeighbor(this, Direction.getOpositeOf(dir), hasPath);
     }
-	public void unlinkNeighbor(Cell other, Direction dir)
-	{
+    public void unlinkNeighbor(Cell other, Direction dir)
+    {
         other.neighbors.replace(Direction.getOpositeOf(dir), new Link(this, false));
         neighbors.replace(dir, new Link(other, false));
     }
-	public void linkNeighbor(Cell other, Direction dir)
-	{
+    public void linkNeighbor(Cell other, Direction dir)
+    {
         other.neighbors.replace(Direction.getOpositeOf(dir),  new Link(this, true));
         neighbors.replace(dir, new Link(other, true));
     }
@@ -82,8 +113,27 @@ class Cell
 	public Set<Direction> getNeighbors()
 	{
 		return neighbors.keySet();
-	}
-int getRow() { return row; }
+    }
+    public ArrayList<Direction> getLinkedNeighbors() {
+        ArrayList<Direction> tempcells =  new ArrayList<>();
+        for(var n: neighbors.keySet()) {
+            if(neighbors.get(n).hasPath()) {
+                tempcells.add(n);
+            }
+        }
+        return tempcells.isEmpty() ? null : tempcells;
+    }
+    public ArrayList<Direction> getUnlinkedNeighbors() {
+        ArrayList<Direction> tempcells =  new ArrayList<>();
+        for(var n: neighbors.keySet()) {
+            if(!neighbors.get(n).hasPath()) {
+                tempcells.add(n);
+            }
+        }
+        return tempcells.isEmpty() ? null : tempcells;
+    }
+
+    int getRow() { return row; }
 int getCol() { return col ; }
 @Override
 public String toString()

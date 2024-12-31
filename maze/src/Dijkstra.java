@@ -1,3 +1,5 @@
+import java.util.List;
+import java.util.LinkedList;
 class  DijkstraNode
 {
     private Cell cell, parent;
@@ -55,10 +57,11 @@ class Dijkstra extends MazeSolver
         while(current<nodes.size())
         {
             var neighbors=nodes.get(current).getCell().getNeighbors();
-            for(var neighbor: neighbors)
+            for(var neighbor: neighbors )
             {
                 int dist= nodes.get(current).getDist()+1;
-int index=nodes.indexOf(new DijkstraNode(neighbor, Integer.MAX_VALUE));
+// int index=nodes.indexOf(new DijkstraNode(nodes.get(current).getCell().getNeighbor(neighbor), Integer.MAX_VALUE));
+int index=-1;
                 if(index>=0 && index<nodes.size() && nodes.get(index).getDist()>dist && nodes.get(current).getCell().getNeighbor(neighbor).hasPath())
                 {
                     nodes.get(index).setDist(dist);
