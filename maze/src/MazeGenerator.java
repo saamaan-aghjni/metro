@@ -11,10 +11,10 @@ abstract class MazeGenerator
         IntStream.range(0, g.getRow()).forEach( i -> {
             IntStream.range(0, g.getCol()).forEach( j -> {
                 Cell temp = g.cellAt(i, j);
-                var neighbors = temp.getLinkedNeighbors();
-                if(neighbors!=null && neighbors.size()==1 && random.nextInt(0,5)<=3) {
-                    neighbors = temp.getUnlinkedNeighbors();
-                    g.link(temp.getRow(),temp.getCol(), neighbors.get(random.nextInt(0, neighbors.size())));
+                var neighbours = temp.getLinkedneighbours();
+                if(neighbours!=null && neighbours.size()==1 && random.nextInt(0,5)<=3) {
+                    neighbours = temp.getUnlinkedneighbours();
+                    g.link(temp.getRow(),temp.getCol(), neighbours.get(random.nextInt(0, neighbours.size())));
                 }
             });
         });
@@ -31,12 +31,12 @@ abstract class MazeGenerator
     {
         for(int j=0; j<g.getCol(); j++) {
             Cell temp = g.cellAt(i, j);
-            var neighbors = temp.getLinkedNeighbors();
-            if(neighbors == null) {
+            var neighbours = temp.getLinkedneighbours();
+            if(neighbours == null) {
                 continue;
             }
-            if(neighbors.size()==1) {
-                g.unlink(i, j, neighbors.get(0));
+            if(neighbours.size()==1) {
+                g.unlink(i, j, neighbours.get(0));
             }
         }
     }

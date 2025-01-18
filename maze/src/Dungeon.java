@@ -60,11 +60,11 @@ map.link(p.getX(), p.getY(), Direction.EAST);
                 continue;
             }
             for(var p: current_room.getPoints()) {            
-                if(map.cellAt(p.getX(), p.getY()).getLinkedNeighbors()==null ) continue;
-                if( map.cellAt(p.getX(), p.getY()).getLinkedNeighbors().size()==1) {
+                if(map.cellAt(p.getX(), p.getY()).getLinkedneighbours()==null ) continue;
+                if( map.cellAt(p.getX(), p.getY()).getLinkedneighbours().size()==1) {
                     current_score+=1;
                 }
-                if( map.cellAt(p.getX(), p.getY()).getLinkedNeighbors().size()>=2) {
+                if( map.cellAt(p.getX(), p.getY()).getLinkedneighbours().size()>=2) {
                     current_score+=3;
                 }
             }
@@ -95,7 +95,7 @@ public String toString() {
             res+="*";
             if(temproom != null) res+=temproom.getName();
             else res+="#";
-            var east_n=map.getNeighborTo(i, j, Direction.EAST);
+            var east_n=map.getNeighbourTo(i, j, Direction.EAST);
             if(east_n == null) { 
                 res+="|";
                 continue;
@@ -105,7 +105,7 @@ public String toString() {
         }
         res+="\n|";
         for(int j =0; j< map.getCol(); j++) {
-            var east_n=map.getNeighborTo(i, j, Direction.SOUTH);
+            var east_n=map.getNeighbourTo(i, j, Direction.SOUTH);
             if(east_n == null) { 
                 res+="--|";
                 continue;

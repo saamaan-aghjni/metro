@@ -20,11 +20,11 @@ public class DungeonAbilityDoor extends DungeonComponent {
         switch(state) {
         case CLOSED:
             state = DungeonDoorState.OPENED;
-            world.dungeon.map.cellAt(owner.getPosition()).setTerrain(doorOwner.terrainWhenOpened());
+            world.dungeon.setTerrainAt(owner.getPosition(),doorOwner.terrainWhenOpened());
             break;
         case OPENED:
             state = DungeonDoorState.CLOSED;
-            world.dungeon.map.cellAt(owner.getPosition()).setTerrain(doorOwner.terrainWhenClosed());
+            world.dungeon.setTerrainAt(owner.getPosition(),doorOwner.terrainWhenClosed());
             break;
         }
         return new DungeonComponentResult(DungeonComponentResultType.SUCCESS, null, null);

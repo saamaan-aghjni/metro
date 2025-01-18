@@ -1,0 +1,12 @@
+
+{
+	name: random|names/humans.txt,
+	race: "h",
+	abilities: ["movement", "melayattack", "itempickup"],
+	default_stats: ["str=[min: 4, max: 9], dex: , con, wis, intl],
+ 	starting_inventory: ["knife": 2, "ak47": 1],
+}
+{
+race: "blackmutant",
+blala: hahaha
+}

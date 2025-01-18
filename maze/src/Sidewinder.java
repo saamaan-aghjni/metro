@@ -9,7 +9,7 @@ class Sidewinder extends MazeGenerator
 		ArrayList<DungeonPoint> runs=new ArrayList<>();
 		for(int i= start.getX(); i<end.getX(); i++)
 		{
-			for(int j=start.getY(); j<end.getY(); j++)
+			for(int j=end.getY()-1; j>=start.getY(); j--)
 			{
 				int choice=random.nextInt(1,3);
 				switch(choice)

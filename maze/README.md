@@ -38,3 +38,10 @@ Here's a list of [Article References](  ) I used/am currently using to add featu
 I'm really thankful for the folks at [Roguebasin](   ), [the Guy on Github](   ), [Eric Lippert](   ), [Adam  ](   ), [Bob    ](     )
 for the decent amount of materials they posted online! <3
 
+
+# License
+
+Copyright © 2024/2025 Saman Aghajani
+This work is free. You can redistribute it and/or modify it under the
+terms of the **Do What The Fuck You Want To** Public License, Version 2,
+as published by Sam Hocevar. See the **LICENSE** file for more details.

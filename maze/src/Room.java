@@ -1,4 +1,8 @@
-
+/**
+ * TODO:  Allow the creation of other non-square-shaped rooms (Circles/triangles for a start?)
+ * Perhaps even more complex shapes
+ * Currently *not* on the priority list.
+ */
 import java.util.ArrayList;
 import java.util.stream.IntStream;
 

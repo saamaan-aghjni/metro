@@ -1,7 +1,31 @@
 
-import java.util.stream.IntStream;
 import java.util.ArrayList;
 import java.util.Random;
+enum Direction{
+    EAST,
+    WEST,
+    NORTH,
+    SOUTH,
+    NORTHEAST,
+    SOUTHWEST,
+    NORTHWEST,
+    SOUTHEAST;
+	static Direction getOpositeOf(Direction dir)
+	{
+		if(dir==NORTH) return SOUTH;
+		if(dir==SOUTH) return NORTH;
+		if(dir==NORTHWEST) return SOUTHEAST;
+		if(dir==NORTHEAST) return SOUTHWEST;
+		if(dir==WEST) return EAST;
+		if(dir==EAST) return WEST;
+		if(dir==SOUTHWEST) return NORTHEAST;
+		if(dir==SOUTHEAST) return NORTHWEST;
+		return null;
+	}
+}
+
+
+
 
 class DungeonPoint {
     private int x, y;
@@ -16,6 +40,10 @@ class DungeonPoint {
     public static DungeonPoint addPoints(DungeonPoint p1, DungeonPoint p2) {
         return new DungeonPoint(p1.getX() + p2.getX(), p1.getY() + p2.getY());
     }
+    public static boolean inRangePoint(DungeonPoint p, DungeonPoint start, DungeonPoint end) {
+        return DungeonUtil.inRange(p.getX(), start.getX(), end.getX()) && DungeonUtil.inRange(p.getY(), start.getY(), end.getY());
+    }
+
     public static DungeonPoint normalize(DungeonPoint p) {
         double len = Math.sqrt(Math.pow(p.getX(),2) + Math.pow(p.getY(), 2));
         return new DungeonPoint((int)(p.getX()/len), (int)(p.getY()/len));
@@ -103,9 +131,13 @@ public static boolean lowerBound(double number, double lower) {
         for(int i=0; i<length; ++i) {
             a.add(default2);
         }            
-        }
-    public static boolean inRangePoint(DungeonPoint p, DungeonPoint start, DungeonPoint end) {
-        return inRange(p.getX(), start.getX(), end.getX()) && inRange(p.getY(), start.getY(), end.getY());
+    }
+    public static int rollPercentileDice() {
+        int tens = random.nextInt(0, 9), ones=random.nextInt(0, 9);
+        return tens*10 + ones;
+    }
+    public static int rollDice(int numbers, int sides) {
+        return random.ints(numbers, 1, sides+1).sum();
     }
     public static boolean inRange(int number, int lower, int upper) {
         return number >= lower && number <= upper; 

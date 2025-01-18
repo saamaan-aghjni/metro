@@ -56,17 +56,17 @@ class Dijkstra extends MazeSolver
         nodes.get(current).setDist(0);
         while(current<nodes.size())
         {
-            var neighbors=nodes.get(current).getCell().getNeighbors();
-            for(var neighbor: neighbors )
+            var neighbours=nodes.get(current).getCell().getNeighbours();
+            for(var neighbour: neighbours )
             {
                 int dist= nodes.get(current).getDist()+1;
-// int index=nodes.indexOf(new DijkstraNode(nodes.get(current).getCell().getNeighbor(neighbor), Integer.MAX_VALUE));
+// int index=nodes.indexOf(new DijkstraNode(nodes.get(current).getCell().getNeighbour(neighbour), Integer.MAX_VALUE));
 int index=-1;
-                if(index>=0 && index<nodes.size() && nodes.get(index).getDist()>dist && nodes.get(current).getCell().getNeighbor(neighbor).hasPath())
+                if(index>=0 && index<nodes.size() && nodes.get(index).getDist()>dist && nodes.get(current).getCell().getNeighbour(neighbour).hasPath())
                 {
                     nodes.get(index).setDist(dist);
                     nodes.get(index).setParent(nodes.get(current).getCell());
-//    System.out.println("Neighbor at "+neighbor.getRow()+" "+neighbor.getCol()+" with updated distance "+nodes.get(index).getDist());
+//    System.out.println("neighbour at "+neighbour.getRow()+" "+neighbour.getCol()+" with updated distance "+nodes.get(index).getDist());
 
                 }
             }        

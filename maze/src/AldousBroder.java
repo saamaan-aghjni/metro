@@ -9,6 +9,7 @@ import java.util.stream.IntStream;
 class ABNode
 {
     private int row, col;
+
     private boolean visited;
     ABNode(int row, int col)
     {
@@ -56,10 +57,10 @@ System.out.println("Called "+start.toString()+" and "+end.toString()+" with indi
 System.out.println(done);
         while(!done)
         {
-            var neighbours = current.getNeighbors().toArray();
+            var neighbours = current.getNeighbours().toArray();
             var neighbourDir=(Direction)(neighbours[random.nextInt(0, neighbours.length)]);
-            Cell neighbour = current.getNeighbor(neighbourDir).neighbor();
-             if(!DungeonUtil.inRangePoint(new DungeonPoint(neighbour.getRow(), neighbour.getCol()), start, end)) {
+            Cell neighbour = current.getNeighbour(neighbourDir).neighbour();
+             if(!DungeonPoint.inRangePoint(new DungeonPoint(neighbour.getRow(), neighbour.getCol()), start, end)) {
                 continue;
             }
             

@@ -24,29 +24,29 @@ class HuntAndKill extends MazeGenerator
         
         visited.get(startc.getRow()).set(startc.getCol(), true);
         Cell temp = startc;
-        Cell neighbor = null;
-        int visitedNeighbors = 0;
-        Direction lastVisitedNeighbor = null;
+        Cell neighbour = null;
+        int visitedneighbours = 0;
+        Direction lastVisitedneighbour = null;
         
         while (true) {
             
-            Direction dir = (Direction)temp.getNeighbors().toArray()[random.nextInt(0, temp.getNeighbors().size())];
-            neighbor = temp.getNeighbor(dir).neighbor();
-                if(visited.get(neighbor.getRow()).get(neighbor.getCol())==true && visitedNeighbors<4) {
-                if(lastVisitedNeighbor==null || lastVisitedNeighbor!= dir) {
-                    lastVisitedNeighbor = dir;
-                    ++visitedNeighbors;                    
+            Direction dir = (Direction)temp.getNeighbours().toArray()[random.nextInt(0, temp.getNeighbours().size())];
+            neighbour = temp.getNeighbour(dir).neighbour();
+                if(visited.get(neighbour.getRow()).get(neighbour.getCol())==true && visitedneighbours<4) {
+                if(lastVisitedneighbour==null || lastVisitedneighbour!= dir) {
+                    lastVisitedneighbour = dir;
+                    ++visitedneighbours;                    
                 }
                 continue;
             }
-            if(visited.get(neighbor.getRow()).get(neighbor.getCol())==false && lastVisitedNeighbor!=null ) {
-                lastVisitedNeighbor = null;
-                visitedNeighbors = 0;
+            if(visited.get(neighbour.getRow()).get(neighbour.getCol())==false && lastVisitedneighbour!=null ) {
+                lastVisitedneighbour = null;
+                visitedneighbours = 0;
             }
-            if ( visitedNeighbors>=temp.getNeighbors().size()-1 ) // Enter hunt mode 
+            if ( visitedneighbours>=temp.getNeighbours().size()-1 ) // Enter hunt mode 
             {
-                visitedNeighbors = 0;
-                lastVisitedNeighbor = null;
+                visitedneighbours = 0;
+                lastVisitedneighbour = null;
                 if(hunt(g, start, end)==false) 
                     break;
             }
@@ -78,9 +78,9 @@ class HuntAndKill extends MazeGenerator
                 
                 ArrayList<Direction> allowedDirs=new ArrayList<>();
                 
-                for(var dir: temp.getNeighbors().toArray()) {
-                    Cell neighbor = g.getNeighborTo(i, j, (Direction)dir).neighbor();
-                    if(DungeonUtil.inRange(neighbor.getRow(), start.getX(),  end.getX()) &&  DungeonUtil.inRange(neighbor.getCol(), start.getY(), end.getY()) && visited.get( neighbor.getRow()).get(neighbor.getCol())==true) {
+                for(var dir: temp.getNeighbours().toArray()) {
+                    Cell neighbour = g.getNeighbourTo(i, j, (Direction)dir).neighbour();
+                    if(DungeonUtil.inRange(neighbour.getRow(), start.getX(),  end.getX()) &&  DungeonUtil.inRange(neighbour.getCol(), start.getY(), end.getY()) && visited.get( neighbour.getRow()).get(neighbour.getCol())==true) {
                         allowedDirs.add((Direction)dir);
                     }
                 }
@@ -89,7 +89,7 @@ class HuntAndKill extends MazeGenerator
 
                 
                     
-                // link temp to one of the random visited neighbors
+                // link temp to one of the random visited neighbours
                 g.link(temp.getRow(), temp.getCol(), allowedDirs.get(random.nextInt(0, allowedDirs.size())));
                 if(temp.getTerrain() == Terrain.DIRT) temp.setTerrain(Terrain.RAIL);
                 visited.get(temp.getRow()).set(temp.getCol(), true);

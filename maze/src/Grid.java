@@ -1,11 +1,15 @@
-class Grid
+
+public class Grid
 {
     private Cell[][] cells;
-	int max_row, max_col;
-	Grid(int row,int col)
-	{
+    int max_row, max_col;
+    private final DungeonPoint BOTTOM, TOP;
+    Grid(int row,int col)
+    {
         max_row = row;
         max_col = col;
+        BOTTOM = new DungeonPoint(0, 0);
+        TOP = new DungeonPoint(max_row, max_col);
         cells=new Cell[max_row][max_col];
         for(int i=0; i<max_row; i++)
         for(int j=0; j<max_col; j++)
@@ -18,21 +22,21 @@ class Grid
             for(int j=0; j<max_col; j++)
             {
                 if(i-1>=0) 
-                    cells[i][j].addNeighbor(cells[i-1][j], Direction.NORTH, false);
+                    cells[i][j].addneighbour(cells[i-1][j], Direction.NORTH, false);
                 if(i+1<max_row) 
-                    cells[i][j].addNeighbor(cells[i+1][j], Direction.SOUTH, false);
+                    cells[i][j].addneighbour(cells[i+1][j], Direction.SOUTH, false);
                 if(j-1>=0) 
-                    cells[i][j].addNeighbor(cells[i][j-1], Direction.WEST, false);
+                    cells[i][j].addneighbour(cells[i][j-1], Direction.WEST, false);
                 if(j+1<max_col) 
-                    cells[i][j].addNeighbor(cells[i][j+1], Direction.EAST, false);
+                    cells[i][j].addneighbour(cells[i][j+1], Direction.EAST, false);
                 // if(i-1>=0 && j-1>=0) 
-                    // cells[i][j].addNeighbor(cells[i-1][j-1], Direction.NORTHWEST, false);
+                    // cells[i][j].addneighbour(cells[i-1][j-1], Direction.NORTHWEST, false);
                 // if(i-1>=0 && j+1<max_col)
-                    // cells[i][j].addNeighbor(cells[i-1][j+1], Direction.NORTHEAST, false);
+                    // cells[i][j].addneighbour(cells[i-1][j+1], Direction.NORTHEAST, false);
                 // if(i+1<max_row && j+1<max_col)
-                    // cells[i][j].addNeighbor(cells[i+1][j+1], Direction.SOUTHEAST, false);
+                    // cells[i][j].addneighbour(cells[i+1][j+1], Direction.SOUTHEAST, false);
                 // if(i+1<max_row && j-1>=0)
-                    // cells[i][j].addNeighbor(cells[i+1][j-1], Direction.SOUTHWEST, false);
+                    // cells[i][j].addneighbour(cells[i+1][j-1], Direction.SOUTHWEST, false);
                 }
     }
 
@@ -60,7 +64,7 @@ class Grid
                 //other=cells[row1+1][col1+1];
 
             if(other!=null)
-                cells[row1][col1].linkNeighbor(other, dir);
+                cells[row1][col1].linkneighbour(other, dir);
         }
     }
 
@@ -87,7 +91,7 @@ class Grid
             //if(dir==Direction.SOUTHEAST && col1<max_col+1 && row1<max_row+1)
                 //other=cells[row1+1][col1+1];
             if(other!=null)
-                cells[row1][col1].unlinkNeighbor(other, dir);
+                cells[row1][col1].unlinkneighbour(other, dir);
         }
     }
 
@@ -105,7 +109,7 @@ class Grid
                 if(j==max_col-1) b+="|";
                 else
                 {
-                    if(!cells[i][j].getNeighbor(Direction.EAST).hasPath()) b+="|";
+                    if(!cells[i][j].getNeighbour(Direction.EAST).hasPath()) b+="|";
 else b+=" ";
                 }
 
@@ -115,8 +119,8 @@ else b+=" ";
             b+="\n|";
             for(int j=0; j<max_col; j++)
             {
-                if(!cells[i][j].getNeighbor(Direction.SOUTH).hasPath()) b+="----|";
-                else if(cells[i][j].getNeighbor(Direction.SOUTH).hasPath()) b+="   |";
+                if(!cells[i][j].getNeighbour(Direction.SOUTH).hasPath()) b+="----|";
+                else if(cells[i][j].getNeighbour(Direction.SOUTH).hasPath()) b+="   |";
 
             }
 }
@@ -125,13 +129,21 @@ else b+=" ";
     }
     int getRow() { return max_row; }
     int getCol() { return max_col; }
-    public Cell.Link getNeighborTo(int row, int col, Direction dir)
+    public Cell.Link getNeighbourTo(int row, int col, Direction dir)
     {
         if(row<0 || col<0 || row>max_row || col>max_col) return null;
-        return cells[row][col].getNeighbor(dir);
+        return cells[row][col].getNeighbour(dir);
     }
+    public Cell.Link getNeighbourTo(DungeonPoint p, Direction dir)
+    {
+        if(!DungeonPoint.inRangePoint(p, BOTTOM, TOP)) {
+            return null;
+        }
+        return cells[p.getX()][p.getY()].getNeighbour(dir);
+    }
+
     public Cell cellAt(DungeonPoint p) {
-        return DungeonUtil.inRangePoint(p, new DungeonPoint(0, 0), new DungeonPoint(getRow(), getCol())) ? cells[p.getX()][p.getY()] : null;
+        return DungeonPoint.inRangePoint(p, new DungeonPoint(0, 0), new DungeonPoint(getRow(), getCol())) ? cells[p.getX()][p.getY()] : null;
     }
     public Cell cellAt(int row, int col)
     {

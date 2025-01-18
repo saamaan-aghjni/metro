@@ -1,6 +1,11 @@
+/**
+ * https://journal.stuffwithstuff.com/2014/07/15/a-turn-based-game-loop/
+ **/
 enum DungeonAbilityType {
     MOVEMENT,
     INTERACTION,
+    CONSUME,
+    MELAYATTACK,
     DOORMANAGEMENT, // Special for Door entities
     ITEMPICKUP
 }
@@ -16,12 +21,15 @@ record DungeonComponentResult(DungeonComponentResultType result, DungeonAbilityT
 }
 
 public  abstract class DungeonComponent {    
-        protected DungeonEntity owner;
-         protected static final DungeonComponent DUMMY =new DungeonComponentDummy();
-        public DungeonComponent(DungeonEntity e) {
-            this.owner = e;
-        }
-        public  abstract DungeonComponentResult perform();
+    protected DungeonEntity owner;
+    protected static final DungeonComponent DUMMY =new DungeonComponentDummy();
+    public DungeonComponent(DungeonEntity e) {
+        this.owner = e;
+    }
+    public  abstract DungeonComponentResult perform();
+    public double getCost() {
+        return 0.0;
+    }
 }
 
 class DungeonComponentDummy extends DungeonComponent // Because DungeonComponentResult does not allow null values 

@@ -25,13 +25,13 @@ import  java.util.stream.IntStream;
         crums.push(temp);
         while(!crums.isEmpty()) {
             temp = crums.pop();
-            allowedDirs = unvisitedNeighbors(temp, start, end);            
+            allowedDirs = unvisitedneighbours(temp, start, end);            
             if(allowedDirs.isEmpty()) {
                 backtrack(g, start, end);
                 continue;
             }
             Direction dir = allowedDirs.get(random.nextInt(0, allowedDirs.size()));
-            Cell tempn=temp.getNeighbor(dir).neighbor();
+            Cell tempn=temp.getNeighbour(dir).neighbour();
             DungeonPoint p=new DungeonPoint(tempn.getRow(), tempn.getCol());           
             g.link(temp.getRow(), temp.getCol(), dir);
             if(temp.getTerrain() == Terrain.DIRT)  temp.setTerrain(Terrain.RAIL);
@@ -52,7 +52,7 @@ crums.clear();
         if(crums.isEmpty())
             return;
         final Cell temp = crums.pop();
-        allowedDirs = unvisitedNeighbors(temp, start, end);
+        allowedDirs = unvisitedneighbours(temp, start, end);
 
         if(allowedDirs.isEmpty()) {
              backtrack(g, start, end);            
@@ -62,19 +62,19 @@ crums.clear();
         g.link(temp.getRow(), temp.getCol(), dir);
         if(temp.getTerrain() == Terrain.DIRT) temp.setTerrain(Terrain.RAIL);
         crums.push(temp);
-        Cell tempn=temp.getNeighbor(dir).neighbor();
+        Cell tempn=temp.getNeighbour(dir).neighbour();
         crums.push(tempn);
         visited.get(tempn.getRow()).set(tempn.getCol(), true);
         visited.get(temp.getRow()).set(temp.getCol(), true);
 
     }
 
-    private static ArrayList<Direction> unvisitedNeighbors(Cell c, DungeonPoint start, DungeonPoint end) {        
+    private static ArrayList<Direction> unvisitedneighbours(Cell c, DungeonPoint start, DungeonPoint end) {        
         ArrayList<Direction> dirs = new ArrayList<>();
-        if(c.getNeighbors() == null) return null;
-        for(Direction n: c.getNeighbors()) {
-            Cell neighbor = c.getNeighbor(n).neighbor();
-            if(visited.get(neighbor.getRow()).get(neighbor.getCol())==false && DungeonUtil.inRange(neighbor.getRow(), start.getX(), end.getX()) && DungeonUtil.inRange(neighbor.getCol(), start.getY(), end.getY())) {                
+        if(c.getNeighbours() == null) return null;
+        for(Direction n: c.getNeighbours()) {
+            Cell neighbour = c.getNeighbour(n).neighbour();
+            if(visited.get(neighbour.getRow()).get(neighbour.getCol())==false && DungeonUtil.inRange(neighbour.getRow(), start.getX(), end.getX()) && DungeonUtil.inRange(neighbour.getCol(), start.getY(), end.getY())) {                
                 dirs.add(n);
             }
         }

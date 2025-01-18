@@ -1,106 +1,207 @@
-import java.util.ArrayList;
+/**
+ * https://journal.stuffwithstuff.com/2008/11/17/using-an-iterator-as-a-game-loop/
+ * https://gameprogrammingpatterns.com/component.html
+ * https://medium.com/@guribemontero/dungeon-generation-using-binary-space-trees-47d4a668e2d0
+**/
 
-public class World {
-    private static String HERO_NAME = "Artjom";
-    ArrayList<DungeonEntity> actors=new ArrayList<>();
-    ArrayList<Integer> registeredActors = new ArrayList<>();
+import java.util.ArrayList;
+import java.util.UUID;
+import java.util.logging.Level;
+
+public final class World {
+    private static UUID heroEntityID = null;
+    private ArrayList<DungeonEntity> actors=new ArrayList<>();
+    private ArrayList<Integer> registeredActors = new ArrayList<>();
     private int currentActor=0;
-    ArrayList<ArrayList<DungeonEntity>> items=new ArrayList<ArrayList<DungeonEntity>>();
-    BSPDungeon dungeon;
-    int width, height;
+    private ArrayList<ArrayList<DungeonEntity>> items=new ArrayList<ArrayList<DungeonEntity>>();
+    BSPDungeon dungeon;    
     public World(int width, int height, MazeGenerator mg) {
-        this.width = width;
-        this.height = height;
-        Grid g= new Grid(height, width);
-        dungeon = new BSPDungeon(g, mg);
+        dungeon = new BSPDungeon(width, height, mg);
         DungeonUtil.fillArray(actors, width*height, null);
         DungeonUtil.fillArray(items, width*height, null);
         placeDoorEntities();
     }
-    public boolean registerEntity(DungeonEntity ent) {
+    public boolean registerEntity(DungeonEntity ent, boolean isHero) {
         DungeonPoint p = ent.getPosition();
-        if(actors.get(DungeonUtil.positionToIndex(p, height))!=null) return false;
-        actors.set(DungeonUtil.positionToIndex(p, height), ent);
-        registeredActors.add(DungeonUtil.positionToIndex(p, height));
+        if(actors.get(DungeonUtil.positionToIndex(p, dungeon.getRow()))!=null) {
+            return false;
+        }
+        actors.set(DungeonUtil.positionToIndex(p, dungeon.getRow()), ent);
+
+        registeredActors.add(DungeonUtil.positionToIndex(p, dungeon.getRow()));
+        if(isHero && heroEntityID == null) {
+            heroEntityID = ent.getID();
+            currentActor = registeredActors.size()-1;
+            
+        }
+
         return true;
     }
+    boolean registerEntity(DungeonEntity ent) {
+        return registerEntity(ent, false);
+    }
     public DungeonEntity removeEntity(DungeonEntity ent) {
-        DungeonPoint p = ent.getPosition();
-        if(actors.get(DungeonUtil.positionToIndex(p, height))==null) return null;
-        actors.set(DungeonUtil.positionToIndex(p, height), null);        
-        registeredActors.remove(registeredActors.get(DungeonUtil.positionToIndex(p, height)));
+        int index  = DungeonUtil.positionToIndex(ent.getPosition(), dungeon.getRow());
         
+        if(actors.get(index)==null) {
+            return null;
+        }
+        actors.set(index, null);        
+        int ra = registeredActors.indexOf(index);
+        if(ra>=0) {
+            
+            registeredActors.remove(ra);
+            
+        }
+        if(ent.getID().equals(heroEntityID)) {
+            heroEntityID = null;
+        }
         return ent;
     }
-    public Terrain getTerrainAt(DungeonPoint p) {
-        return dungeon.getTerrainAt(p);
-    }
     public DungeonEntity getEntityAt(DungeonPoint p) {
-        return actors.get(DungeonUtil.positionToIndex(p, height));
+        int index = DungeonUtil.positionToIndex(p, dungeon.getRow());
+        return index >= dungeon.getRow() * dungeon.getCol() ? null :actors.get(index);
     }
     public boolean moveEntity(DungeonPoint pos, DungeonPoint p) {
         DungeonEntity ent=getEntityAt(pos);
-        if(ent==null) return false;
+        if(ent==null) {
+            return false;
+        }
         DungeonPoint oldpos = ent.getPosition();
-        actors.set(DungeonUtil.positionToIndex(p, height), ent);
-        registeredActors.set(registeredActors.indexOf(DungeonUtil.positionToIndex(pos, height)), DungeonUtil.positionToIndex(p, height));
-        actors.set(DungeonUtil.positionToIndex(oldpos, height), null);
+        actors.set(DungeonUtil.positionToIndex(p, dungeon.getRow()), ent);
+        registeredActors.set(registeredActors.indexOf(DungeonUtil.positionToIndex(pos, dungeon.getRow())), DungeonUtil.positionToIndex(p, dungeon.getRow()));
+        actors.set(DungeonUtil.positionToIndex(oldpos, dungeon.getRow()), null);
         ent.setPosition(p);
         return true;
     }
-    public ArrayList<Room> getRooms() {
-        return dungeon.getRooms();
-    }
+    
     public void update() {        
-        DungeonComponentStat stat = actors.get(registeredActors.get(currentActor)).getStat();
+        DungeonEntity hero = getRegisteredEntityAt(currentActor);
 
-        var comp = actors.get(registeredActors.get(currentActor)).getNextAction();
-        stat.perform();
-        if(comp == null) return;
-        var res=comp.perform();
+        DungeonComponentStat stat = hero.getStat();
+System.out.println(heroEntityID.equals(hero.getID()));
+        var comp = hero.getNextAction();
+        if(comp == null) {
+            System.out.println("Action null");
+            return;
+        }
+        if(!stat.isAlive()) {
+            hero.log(Level.SEVERE, "You have died!");
+            removeEntity(hero);
+            return;
+        }
+        if(comp.getCost() <= 0.0) {
+            var res = comp.perform();
+            hero.setNextAction(null);
+        }
+        else {
+            var energyReduction=stat.getEnergy() -comp.getCost();
+            System.out.println("energy "+stat.getEnergy()+" cost was "+comp.getCost());
+            
+            if(energyReduction <= 0.0) {
+                hero.log(Level.WARNING, "You need a moment to rest!");
 
-        while(!actors.get(registeredActors.get(currentActor)).getName() .equals(HERO_NAME)) {            
-            if(!stat.isAlive()) {
-                continue;
+                hero.setNextAction(null);
+                updateOtherEntities();
+                cleanupEntities();
             }
             else {
-                actors.get(registeredActors.get(currentActor)).getNextAction().perform();
+                
+                stat.setEnergy(energyReduction);
+                comp.perform();
+                hero.setNextAction(null);
             }
-            stat = actors.get(registeredActors.get(currentActor)).getStat();
-            currentActor+=1%registeredActors.size();
         }
+        // updateItems();
     } 
+
+    private void cleanupEntities() {
+        for(int i=0; i<registeredActors.size(); i++) {
+            DungeonEntity current = getRegisteredEntityAt(i);
+            var stat = current.getStat();
+            if(!stat.isAlive() && !current.getID().equals(heroEntityID)) {
+                removeEntity(current);
+                continue;
+            }
+        }
+    }
+    private void updateOtherEntities() {
+        DungeonEntity currentEntity = null;
+        System.out.println("other");
+        while(true) 
+        {
+            currentActor = (currentActor+1)%registeredActors.size();
+            System.out.println("currentactor "+currentActor);
+            currentEntity = getRegisteredEntityAt(currentActor);
+            var stat = currentEntity.getStat();
+            
+            stat.perform();
+                
+            if(currentEntity.getID().equals(heroEntityID)) {
+                break;
+            }
+            var comp = currentEntity .getNextAction();
+            if(comp==null) {
+                continue;
+            }
+            if(comp.getCost()<=0.0) {
+                comp.perform();
+                currentEntity.setNextAction(DungeonComponent.DUMMY);
+                continue;
+            }
+            double energyReduction = stat.getEnergy() - comp.getCost();
+            if(energyReduction<=0.0) {
+                currentEntity.setNextAction(DungeonComponent.DUMMY);
+            }
+            else {
+                while(stat.getEnergy() >0.0) {
+                    stat.setEnergy(energyReduction);
+                    comp.perform();
+                    energyReduction = stat.getEnergy() - comp.getCost();
+                }
+            }
+            stat.perform();
+        }
+    }
+    private DungeonEntity getRegisteredEntityAt(int index) {
+        if(index>=registeredActors.size() || index<0) { 
+            return null;
+        }
+        return actors.get(registeredActors.get(index));
+    }
 @Override    
     public String toString() {
         Room temproom= null;
         DungeonEntity tempent=null;
         String res="";
-        for(int i=0; i<dungeon.map.getRow(); i++) {
+        DungeonPoint p;
+        for(int i=0; i<dungeon.getRow(); i++) {
             res+="\n|";
-            for(int j =0; j< dungeon.map.getCol(); j++) {
-                temproom = dungeon.getRoomAt(new DungeonPoint(i, j));
-                tempent=getEntityAt(new DungeonPoint(i, j));
-                res+=dungeon.map.cellAt(i, j).getTerrain().getSymbol();
+            for(int j =0; j< dungeon.getCol(); j++) {
+                p = new DungeonPoint(i ,j);
+                temproom = dungeon.getRoomAt(p);
+                tempent=getEntityAt(p);
+                res+=dungeon.getTerrainAt(p).getSymbol();
                 if(temproom != null) res+=temproom.getName();
                 // else res+="#";
                 if(tempent!=null) res+=tempent.getName();
-                var east_n=dungeon.map.getNeighborTo(i, j, Direction.EAST);
-                if(east_n == null) { 
+                var east_n=dungeon.hasPathTo(p, Direction.EAST);
+                if(!east_n ) { 
                     res+="|";
                     continue;
                 }
-        if(east_n.hasPath())  res+=".";
-                if(!east_n.hasPath())  res+="|";
+                else  res+=".";                
             }
             res+="\n|";
-            for(int j =0; j< dungeon.map.getCol(); j++) {
-                var east_n=dungeon.map.getNeighborTo(i, j, Direction.SOUTH);
-                if(east_n == null) { 
+            for(int j =0; j< dungeon.getCol(); j++) {
+                p = new DungeonPoint(i ,j);
+                var east_n=dungeon.hasPathTo(p, Direction.SOUTH);
+                if(!east_n ) { 
                     res+="--|";
                     continue;
                 }
-        if(east_n.hasPath())  res+="..|";
-                if(!east_n.hasPath())  res+="----|";
+        else res+="..|";
+            
             }
             }
         
@@ -117,10 +218,10 @@ public class World {
                 if(rand<=2) {
                     DungeonEntityDoor d = new DungeonEntityDoor(p, DungeonDoorType.WOODEN, 100.0, 100.0);
                     registerEntity(d);
-                    dungeon.map.cellAt(p).setTerrain(d.terrainWhenClosed());
+                    dungeon.setTerrainAt(p ,d.terrainWhenClosed());
                 }
                 else {
-                    dungeon.map.cellAt(p).setTerrain(Terrain.DIRT);
+                    dungeon.setTerrainAt(p,Terrain.DIRT);
                 }
             });
         }
