@@ -1,7 +1,15 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+/** At the root of all evil lies a cyclic graph
+ * Terrain defines also costs.  I should change this someday to allow for arbitrary terrain creations.
+ * Every cell links to the four neighbouring cells around it (see grid.java)
+ * Also implements Serializable 
+ */
+
 enum Terrain {    
     DIRT(0.0, 'd'),
     CONCRETE(0.2, 'c'),
@@ -27,9 +35,10 @@ enum Terrain {
     public char getSymbol() { return symbol; }
     public double getCost() { return cost; }
 }
-class Cell
+
+class Cell implements Serializable
 {
-        public class Link
+        public class Link implements Serializable
         {
             private Cell neighbour;
             private boolean hasPath;
@@ -39,9 +48,11 @@ class Cell
                 this.neighbour = neighbour;
             }
             public Cell neighbour() { return neighbour; }
-            public boolean hasPath() { return hasPath; }
+            public boolean hasPath() { 
+                return hasPath; 
+            }
         }
-    private Map<Direction, Link> neighbours=new HashMap<>();
+    private HashMap<Direction, Link> neighbours=new HashMap<>();
     private int row, col;
     Terrain terrain;
     public Cell(int row, int col)
@@ -56,40 +67,40 @@ class Cell
     public void setTerrain(Terrain ter) {
         this.terrain = ter;
     }
-    public void addneighbour(Cell other, Direction dir, boolean hasPath)
+    public void addNeighbour(Cell other, Direction dir, boolean hasPath)
     {
         if(neighbours.containsKey(dir)) {
             return; 
-    }
+        }
         Link l=new Link(other,  hasPath);
         neighbours.put(dir, l);
-        other.addneighbour(this, Direction.getOpositeOf(dir), hasPath);
+        other.addNeighbour(this, Direction.getOpositeOf(dir), hasPath);
     }
-    public void unlinkneighbour(Cell other, Direction dir)
+    public void linkNeighbour(Direction dir)
     {
-        other.neighbours.replace(Direction.getOpositeOf(dir), new Link(this, false));
-        neighbours.replace(dir, new Link(other, false));
+        Link othertmp=getNeighbour(dir);
+        if(othertmp != null) {
+            Cell other = othertmp.neighbour();
+            other.neighbours.replace(Direction.getOpositeOf(dir),  new Link(this, true));
+            neighbours.replace(dir, new Link(other, true));
+        }
     }
-    public void linkneighbour(Cell other, Direction dir)
+    public void unlinkNeighbour(Direction dir)
     {
-        other.neighbours.replace(Direction.getOpositeOf(dir),  new Link(this, true));
-        neighbours.replace(dir, new Link(other, true));
+        Link othertmp=getNeighbour(dir);
+        if(othertmp !=null ) {
+            Cell other = othertmp.neighbour();
+            other.neighbours.replace(Direction.getOpositeOf(dir), new Link(this, false));
+            neighbours.replace(dir, new Link(other, false));
+        }
     }
-/*	public void linkneighbour(Cell other)
-	{
-        Direction dir=neighbours.get(other).dir();
-        other.neighbours.replace(Direction.getdir, new Link(Direction.getOpositeOf(dir), true));
-        neighbours.replace(other, new Link(dir, true));
-    }
-*/
-
     public Link getNeighbour(Direction dir)
-	{
+    {
 		return neighbours.containsKey(dir) ? neighbours.get(dir) : null;
-	}
-	public Set<Direction> getNeighbours()
-	{
-		return neighbours.keySet();
+    }
+    public Set<Direction> getNeighbours()
+    {
+        return neighbours.keySet();
     }
     public ArrayList<Direction> getLinkedneighbours() {
         ArrayList<Direction> tempcells =  new ArrayList<>();
@@ -110,15 +121,21 @@ class Cell
         return tempcells.isEmpty() ? null : tempcells;
     }
 
-    int getRow() { return row; }
-int getCol() { return col ; }
+    int getRow() { 
+        return row; 
+    }
+    int getCol() { 
+        return col ; 
+    }
 @Override
 public String toString()
-{
-String st="";
-st+="Cell at ("+getRow()+", "+getCol()+")\n    Number of neighbours: "+neighbours.size()+"\n";
-for(var neighbour: neighbours.keySet())
-    st+="\t\tneighbour at ("+neighbours.get(neighbour).neighbour().getRow()+", "+neighbours.get(neighbour).neighbour().getCol()+"), direction "+neighbour+", has path? "+neighbours.get(neighbour).hasPath()+"\n";
-return st;
-}
+    {
+        String st="";
+        st+="Cell at ("+getRow()+", "+getCol()+")\n    Number of neighbours: "+neighbours.size()+"\n";
+        for(var neighbour: neighbours.keySet()) {
+            st+="\t\tneighbour at ("+neighbours.get(neighbour).neighbour().getRow()+", "+neighbours.get(neighbour).neighbour().getCol()+"), direction "+neighbour+", has path? "+neighbours.get(neighbour).hasPath()+"\n";
+        }
+        return st;
+    }
+
 }

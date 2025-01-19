@@ -4,13 +4,13 @@
 ## What?
 
 
-This is an **attempt** at building a - hopefully performant - rogue-like game, inspired by the novel [Metro]() from the Russian author []().
+This is an **attempt** at building a - hopefully performant - rogue-like game, inspired by the novel [Metro](https://en.wikipedia.org/wiki/Metro_2033_(novel)) from the Russian author []().
 
 ## How?
 
 I use the ECS system to manage actors and items.  The plan is to build a robust and - highly - configurable game, in which the creatures can be easily defined.  It should be possible to play as different races, including human, different specified genders etc etc.
 
-## Motive?
+## Why?
 
 School project :))
 
@@ -29,7 +29,7 @@ Okay, but it was supposed to be that.  And then I realized what have I signed my
 
 ## What Else?
 
-    There's a list of [TODO](), and [Code Documentation](  ) in German.  The latter is unfortunately compolcery to write!
+    There's a list of [TODO](todo.md), and [German Code Documentation](docs/german.md) .  The latter is unfortunately compolcery to write!
 
 ## Credits/Curtacy
 
@@ -41,7 +41,7 @@ for the decent amount of materials they posted online! <3
 
 # License
 
-Copyright © 2024/2025 Saman Aghajani
+Copyright ï¿½ 2024/2025 Saman Aghajani
 This work is free. You can redistribute it and/or modify it under the
 terms of the **Do What The Fuck You Want To** Public License, Version 2,
-as published by Sam Hocevar. See the **LICENSE** file for more details.
+as published by Sam Hocevar. See the [LICENSE](LICENSE) file for more details.

@@ -1,153 +1,121 @@
+/* See cell.java 
+ * Hak-ish implementation of a graph datastructure
+ * TODO:  Improve
+ */
+import java.io.Serializable;
+import java.util.ArrayList;
 
-public class Grid
+public class Grid implements Serializable
 {
-    private Cell[][] cells;
-    int max_row, max_col;
-    private final DungeonPoint BOTTOM, TOP;
-    Grid(int row,int col)
+    private ArrayList<Cell> cells;
+    
+    private final DungeonPoint bottom, top;
+    Grid(int row, int col)
     {
-        max_row = row;
-        max_col = col;
-        BOTTOM = new DungeonPoint(0, 0);
-        TOP = new DungeonPoint(max_row, max_col);
-        cells=new Cell[max_row][max_col];
-        for(int i=0; i<max_row; i++)
-        for(int j=0; j<max_col; j++)
-            cells[i][j]=new Cell(i, j);
+        bottom = new DungeonPoint(0, 0);
+        top = new DungeonPoint(row, col);
+        cells =  new ArrayList<>();
+        DungeonUtil.fillArray(cells, col*row, null);
+        for(int i=0; i<row; i++) {
+            for(int j=0; j<col; j++) {
+                cells.set(DungeonUtil.positionToIndex(new DungeonPoint(i, j), row), new Cell(i, j));
+            }
+        }        
         initCells();
     }
-    void initCells()
+    private void initCells()
     {
-        for(int i=0; i<max_row; i++)
-            for(int j=0; j<max_col; j++)
+        
+        for(int i=bottom.getX(); i<top.getX(); i++) {
+            for(int j=bottom.getY(); j<top.getY(); j++)
             {
-                if(i-1>=0) 
-                    cells[i][j].addneighbour(cells[i-1][j], Direction.NORTH, false);
-                if(i+1<max_row) 
-                    cells[i][j].addneighbour(cells[i+1][j], Direction.SOUTH, false);
-                if(j-1>=0) 
-                    cells[i][j].addneighbour(cells[i][j-1], Direction.WEST, false);
-                if(j+1<max_col) 
-                    cells[i][j].addneighbour(cells[i][j+1], Direction.EAST, false);
-                // if(i-1>=0 && j-1>=0) 
-                    // cells[i][j].addneighbour(cells[i-1][j-1], Direction.NORTHWEST, false);
-                // if(i-1>=0 && j+1<max_col)
-                    // cells[i][j].addneighbour(cells[i-1][j+1], Direction.NORTHEAST, false);
-                // if(i+1<max_row && j+1<max_col)
-                    // cells[i][j].addneighbour(cells[i+1][j+1], Direction.SOUTHEAST, false);
-                // if(i+1<max_row && j-1>=0)
-                    // cells[i][j].addneighbour(cells[i+1][j-1], Direction.SOUTHWEST, false);
+                Cell tmp = cells.get(DungeonUtil.positionToIndex(new DungeonPoint(i, j), top.getX()));
+                if(i-1>=0) {
+                    tmp.addNeighbour(cells.get(DungeonUtil.positionToIndex(new DungeonPoint(i-1,j), top.getX())), Direction.NORTH, false);
                 }
+                if(i+1<top.getX()) {
+                    tmp.addNeighbour(cells.get(DungeonUtil.positionToIndex(new DungeonPoint(i+1, j), top.getX())), Direction.SOUTH, false);
+                }
+                if(j-1>=0) {
+                    tmp.addNeighbour(cells.get(DungeonUtil.positionToIndex(new DungeonPoint(i, j-1), top.getX())), Direction.WEST, false);
+                }
+                if(j+1< top.getY()) {
+                    tmp.addNeighbour(cells.get(DungeonUtil.positionToIndex(new DungeonPoint(i, j+1), top.getX())), Direction.EAST, false);
+                }
+                // Diagonals are too much of a headache to debug on Braille-Display, sorry :()
+            }
+        }
     }
-
- 
-    void link(int row1, int col1, Direction dir)
+    /* Link the given point to its neighbour
+     * 
+      */
+    void link(DungeonPoint point, Direction dir) throws IndexOutOfBoundsException
     {        
-        if(row1>=0 && row1<=max_row && col1>=0 && col1<max_col)
+        if(!DungeonPoint.inRangePoint(point, bottom, top))
         {
-            Cell other=null;
-            if(dir==Direction.NORTH && row1>0 )
-                other=cells[row1-1][col1];
-            if(dir==Direction.SOUTH && row1<max_row-1)
-                other=cells[row1+1][col1];
-            if(dir==Direction.WEST && col1>0)
-                other=cells[row1][col1-1];
-            if(dir==Direction.EAST && col1<max_col-1)
-                other=cells[row1][col1+1];
-            //if(dir==Direction.NORTHWEST &&  row1>0 && col1>0)
-                //other=cells[row1-1][col1-1];
-            //if(dir==Direction.NORTHEAST && col1<max_col-1 && row1>0)
-                //other=cells[row1-1][col1+1];
-            //if(dir==Direction.SOUTHWEST &&  row1<max_row-1 && col1>0)
-                //other=cells[row1+1][col1-1];
-            //if(dir==Direction.SOUTHEAST && col1<max_col+1 && row1<max_row+1)
-                //other=cells[row1+1][col1+1];
-
-            if(other!=null)
-                cells[row1][col1].linkneighbour(other, dir);
+            throw new IndexOutOfBoundsException("point out of range");
         }
+            cells.get(DungeonUtil.positionToIndex(point, top.getX())).linkNeighbour(dir);
     }
-
-    void unlink(int row1, int col1, Direction dir)
+/* Unlinks a neighbour  
+*/
+    public void unlink(DungeonPoint point, Direction dir) throws IndexOutOfBoundsException
     {
-        if(row1>=0 && row1<=max_row && col1>=0 && col1<max_col)
-        {
-            Cell other=null;
-            if(dir==Direction.NORTH && row1>0)
-                other=cells[row1-1][col1];
-            if(dir==Direction.SOUTH && row1<max_row-1)
-                other=cells[row1+1][col1];
-            if(dir==Direction.WEST && col1>0)
-                other=cells[row1][col1-1];
-            if(dir==Direction.EAST && col1<max_col-1)
-                other=cells[row1][col1+1];
-            //if(dir==Direction.NORTHWEST &&  row1>0 && col1>0)
-                //other=cells[row1-1][col1-1];
-            //if(dir==Direction.NORTHEAST && col1<max_col-1 && row1<max_row-1)
-                //other=cells[row1-1][col1+1];
-
-            //if(dir==Direction.SOUTHWEST &&  row1<max_row-1 && col1>0)
-                //other=cells[row1+1][col1-1];
-            //if(dir==Direction.SOUTHEAST && col1<max_col+1 && row1<max_row+1)
-                //other=cells[row1+1][col1+1];
-            if(other!=null)
-                cells[row1][col1].unlinkneighbour(other, dir);
+        if(!DungeonPoint.inRangePoint(point, bottom, top)) {
+            throw new IndexOutOfBoundsException();
         }
+        cells.get(DungeonUtil.positionToIndex(point, top.getX())).unlinkNeighbour(dir);
+
     }
 
     @Override
     public String toString()
     {
         String b=new String();
-        for(int i=0; i<max_row; i++)
+        for(int i=bottom.getX(); i<top.getX(); i++)
         {
             b+="\n";
-            for(int j=0; j<max_col; j++)
+            for(int j=bottom.getY(); j<top.getY(); j++)
             {
                 if(j==0)    b+="|";
                 b+=" * ";
-                if(j==max_col-1) b+="|";
+                if(j==top.getY()-1) b+="|";
                 else
                 {
-                    if(!cells[i][j].getNeighbour(Direction.EAST).hasPath()) b+="|";
+                    if(!cells.get(DungeonUtil.positionToIndex(new DungeonPoint(i, j), top.getX())).getNeighbour(Direction.EAST).hasPath()) b+="|";
 else b+=" ";
                 }
 
             }
-            if(i<max_row-1)
-{
+            if(i<top.getX()-1)
+        {
             b+="\n|";
-            for(int j=0; j<max_col; j++)
+            for(int j=bottom.getY(); j<top.getY(); j++)
             {
-                if(!cells[i][j].getNeighbour(Direction.SOUTH).hasPath()) b+="----|";
-                else if(cells[i][j].getNeighbour(Direction.SOUTH).hasPath()) b+="   |";
+                if(!cellAt(new DungeonPoint(i, j)).getNeighbour(Direction.SOUTH).hasPath()) b+="----|";
+                else if(cellAt(new DungeonPoint (i,j)).getNeighbour(Direction.SOUTH).hasPath()) b+="   |";
 
             }
 }
         }
         return b;
     }
-    int getRow() { return max_row; }
-    int getCol() { return max_col; }
-    public Cell.Link getNeighbourTo(int row, int col, Direction dir)
-    {
-        if(row<0 || col<0 || row>max_row || col>max_col) return null;
-        return cells[row][col].getNeighbour(dir);
+    int getRow() { 
+        return top.getX(); 
     }
-    public Cell.Link getNeighbourTo(DungeonPoint p, Direction dir)
+    int getCol() { 
+        return top.getY(); 
+    }
+    /* Returns the link - if any - between the cell and the given direction */
+    public Cell.Link getNeighbourTo(DungeonPoint p, Direction dir) throws IndexOutOfBoundsException
     {
-        if(!DungeonPoint.inRangePoint(p, BOTTOM, TOP)) {
-            return null;
-        }
-        return cells[p.getX()][p.getY()].getNeighbour(dir);
+        return cells.get(DungeonUtil.positionToIndex(p, top.getX())).getNeighbour(dir);
     }
 
-    public Cell cellAt(DungeonPoint p) {
-        return DungeonPoint.inRangePoint(p, new DungeonPoint(0, 0), new DungeonPoint(getRow(), getCol())) ? cells[p.getX()][p.getY()] : null;
-    }
-    public Cell cellAt(int row, int col)
-    {
-        if(row<0 || row>this.max_row || col<0 || col>this.max_col) return null; //out of bounds
-        return cells[row][col];
+    public Cell cellAt(DungeonPoint point) throws IndexOutOfBoundsException {
+        if(!DungeonPoint.inRangePoint(point, bottom, top)) {
+            throw new IndexOutOfBoundsException("Cell out of bounds: "+point.toString()+", top: "+top.toString()+", bottom: "+bottom.toString());
+        }
+        return cells.get(DungeonUtil.positionToIndex(point, top.getX()));
     }
 }

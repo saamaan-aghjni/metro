@@ -1,16 +1,18 @@
 /**
  * https://journal.stuffwithstuff.com/2008/11/17/using-an-iterator-as-a-game-loop/
  * https://gameprogrammingpatterns.com/component.html
- * https://medium.com/@guribemontero/dungeon-generation-using-binary-space-trees-47d4a668e2d0
-**/
 
+**/
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.io.IOException;
+import java.io.Serializable;
 
-public final class World {
-    private static UUID heroEntityID = null;
+public final class World implements Serializable {
+    private UUID heroEntityID = null;
     private ArrayList<DungeonEntity> actors=new ArrayList<>();
+    private transient DungeonEntityDataManager entityManager = null;  // Transient because I don't want Serializable.writeObject trying to write this and gets blown way because org.json does not support serialization.
     private ArrayList<Integer> registeredActors = new ArrayList<>();
     private int currentActor=0;
     private ArrayList<ArrayList<DungeonEntity>> items=new ArrayList<ArrayList<DungeonEntity>>();
@@ -18,8 +20,41 @@ public final class World {
     public World(int width, int height, MazeGenerator mg) {
         dungeon = new BSPDungeon(width, height, mg);
         DungeonUtil.fillArray(actors, width*height, null);
-        DungeonUtil.fillArray(items, width*height, null);
+        DungeonUtil.fillArray(items, width*height, new ArrayList<DungeonEntity>());
         placeDoorEntities();
+    }
+    public void loadJSONEntities(String filename) throws IOException {
+        entityManager = DungeonEntityDataManager.loadFile(filename);
+    }
+    public void spawnItem(DungeonPoint p, String name) {
+        DungeonEntity item = entityManager.createItem(name, p);
+        if(item == null) {
+            
+            return;
+        }
+        items.get(DungeonUtil.positionToIndex(p, dungeon.getRow())).add(item);
+    }
+    public void spawnCreature(DungeonPoint point, String name, DungeonEntityRace race, DungeonCreatureClass entityClass, boolean isHero) throws Exception {
+        if(entityManager==null) {
+            throw new NullPointerException("Entities not loaded!");
+        }
+        if(getEntityAt(point)!=null) {
+            throw new NullPointerException("Entity is already on this point! "+ getEntityAt(point).toString());
+        }
+        if(isHero && heroEntityID != null) {
+            throw new Exception("Hero is already defined!");
+        }
+        if(race ==null || entityClass == null) {
+            throw new Exception("null race or class given!");
+        }
+        if(race == DungeonEntityRace.ITEM) {
+            throw new Exception("Is this an item? Use spawnItem() instead!");
+        }        
+        DungeonEntity creature = entityManager.createCreature(name, point, race, entityClass);
+        if(creature==null) {
+            throw new NullPointerException("Creature is null!");
+        }
+        registerEntity(creature, isHero);
     }
     public boolean registerEntity(DungeonEntity ent, boolean isHero) {
         DungeonPoint p = ent.getPosition();
@@ -42,7 +77,6 @@ public final class World {
     }
     public DungeonEntity removeEntity(DungeonEntity ent) {
         int index  = DungeonUtil.positionToIndex(ent.getPosition(), dungeon.getRow());
-        
         if(actors.get(index)==null) {
             return null;
         }
@@ -79,10 +113,9 @@ public final class World {
         DungeonEntity hero = getRegisteredEntityAt(currentActor);
 
         DungeonComponentStat stat = hero.getStat();
-System.out.println(heroEntityID.equals(hero.getID()));
+
         var comp = hero.getNextAction();
         if(comp == null) {
-            System.out.println("Action null");
             return;
         }
         if(!stat.isAlive()) {
@@ -96,8 +129,6 @@ System.out.println(heroEntityID.equals(hero.getID()));
         }
         else {
             var energyReduction=stat.getEnergy() -comp.getCost();
-            System.out.println("energy "+stat.getEnergy()+" cost was "+comp.getCost());
-            
             if(energyReduction <= 0.0) {
                 hero.log(Level.WARNING, "You need a moment to rest!");
 
@@ -114,7 +145,17 @@ System.out.println(heroEntityID.equals(hero.getID()));
         }
         // updateItems();
     } 
-
+    public DungeonEntity getHero() {
+        if(heroEntityID == null) {
+            return null;
+        }
+        for(int e=0; e<registeredActors.size(); e++) {
+            if(getRegisteredEntityAt(e).getID().equals(heroEntityID)) {
+                return getRegisteredEntityAt(e);
+            }
+        }
+        return null;
+    }
     private void cleanupEntities() {
         for(int i=0; i<registeredActors.size(); i++) {
             DungeonEntity current = getRegisteredEntityAt(i);
@@ -126,8 +167,7 @@ System.out.println(heroEntityID.equals(hero.getID()));
         }
     }
     private void updateOtherEntities() {
-        DungeonEntity currentEntity = null;
-        System.out.println("other");
+        DungeonEntity currentEntity = null;        
         while(true) 
         {
             currentActor = (currentActor+1)%registeredActors.size();

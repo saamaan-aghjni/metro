@@ -1,4 +1,5 @@
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 enum Direction{
@@ -27,7 +28,7 @@ enum Direction{
 
 
 
-class DungeonPoint {
+class DungeonPoint implements Serializable {
     private int x, y;
     private static int xxcomp[] =new int[]{ 1, 0, 0, -1, -1, 0, 0, 1 };
     private static int xycomp[] =new int[] { 0, 1, -1, 0, 0, -1, 1, 0 };

@@ -3,10 +3,11 @@
  * Perhaps even more complex shapes
  * Currently *not* on the priority list.
  */
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.stream.IntStream;
 
-public class Room {    
+public class Room implements Serializable {    
     private int height, width, topX, topY;
     private String name;
     private ArrayList<DungeonPoint> exits=new ArrayList<>();

@@ -1,8 +1,6 @@
 // Is buggy, can't break out of the loop.  Fix later
 
 import java.util.ArrayList;
-// import java.util.concurrent.Delayed;
-
 import java.util.stream.IntStream;
 
 
@@ -30,7 +28,7 @@ class ABNode
         return oth.row == this.row && oth.col == this.col ;
     }
 }
-
+/* Implementation of the Aldous-Broder Algorithm.  Please see <https://en.wikipedia.org/wiki/Maze_generation_algorithm>   */
 class AldousBroder extends MazeGenerator
 {    
     ArrayList<Boolean> visited=null;

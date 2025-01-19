@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Handler;
@@ -19,38 +20,36 @@ enum DungeonEntityRace {
         return identifier;
     }
 }
-enum DungeonEntitySex {
-    FEMALE,
-    MALE,
-    NONBINARY
-}
-enum DungeonEntityClass {
-    WARRIOR,
-    MAGE,
-    PREACHER,
-    MUSHROOMGROWER
-}
 
-public class DungeonEntity {
-    protected HashMap<DungeonAbilityType, Boolean> abilities = new HashMap<>();
-    protected DungeonEntityRace entityRace;
-    protected DungeonEntityClass entityClass;
-    protected UUID id;
-    protected DungeonComponent nextAction;
-    protected DungeonComponentStat status;
-    protected String name;
-    protected DungeonPoint pos;
-    protected DungeonEntity equipedItem;
+public class DungeonEntity implements Serializable {
+    private HashMap<DungeonAbilityType, Boolean> abilities = new HashMap<>();
+    private DungeonEntityRace entityRace;
+    private UUID id;
+    private DungeonComponent nextAction;
+    private DungeonComponentStat status;
+    private DungeonInventory inventory ;
+    private String name;
+    private DungeonPoint pos;
+    private DungeonEntity equipedItem;
     private Logger logger;
-    protected DungeonEntity(String name, DungeonPoint pos, DungeonEntityRace t, DungeonEntityClass c, DungeonComponentStat s) {
+    public DungeonEntity(String name, DungeonPoint pos, DungeonEntityRace t,  DungeonComponentStat s, DungeonInventory inv) {
         this.name = name;
         this.pos = pos;
         this.entityRace = t;
-        this.entityClass = c;
+        this.inventory = inv;
         this.status = s;
-        this.status.setOwner(this);
+        this.status.setOwner(null);
         this.logger = null;
         this.id = UUID.randomUUID();
+    }
+    public DungeonEntity(String name, DungeonPoint pos, DungeonEntityRace t,  DungeonComponentStat s) {
+        this(name, pos, t, s, null);
+    }
+    public boolean hasInventory() {
+        return inventory != null;
+    }
+    public DungeonInventory getInventory() {
+        return inventory;
     }
     public boolean hasAbility(DungeonAbilityType c) {
         return abilities.containsKey(c);
@@ -66,7 +65,7 @@ public class DungeonEntity {
         return hasAbility(c) && abilities.get(c);
     }
     public void addAbility(DungeonAbilityType c, boolean enabled) {
-         abilities.put(c, enabled); 
+        abilities.put(c, enabled); 
     }
     public boolean removeAbility(DungeonAbilityType c) {
         return hasAbility(c) ? abilities.remove(c) : false; 
@@ -98,7 +97,7 @@ public class DungeonEntity {
         }
         logger.log(level, message);
     }
-    public DungeonEntityClass getEntityClass() { return entityClass; }
+    
     public DungeonPoint getPosition() {
         return pos;
     }
@@ -134,6 +133,6 @@ public class DungeonEntity {
     }
     @Override
     public String toString() {
-        return "Name: "+ name +" Race: "+ (entityRace==null ? " unknown" : entityRace.toString()) +"\n Class: "+ (entityClass == null ? " unknown " : entityClass.toString())+" \nLocation: "+ pos.toString()+" \nStatus: "+status.toString()+"\nCurrently holds "+ ( equipedItem == null ? " nothing " : equipedItem.getName())+".\nAbilities: "+abilities.toString();
+        return "Name: "+ name +" Race: "+ (entityRace==null ? " unknown" : entityRace.toString()) +"\nLocation: "+ pos.toString()+" \nStatus: "+status.toString()+"\nCurrently holds "+ ( equipedItem == null ? " nothing " : equipedItem.getName())+".\nAbilities: "+abilities.toString()+"\nInventory: "+(hasInventory() ? inventory.toString() : " none");
     }
 }

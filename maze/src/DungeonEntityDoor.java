@@ -19,11 +19,11 @@ public class DungeonEntityDoor extends DungeonEntity // Door is just an entity w
     private DungeonDoorType doorType = null;    
     private DungeonDoorState state;    
     DungeonEntityDoor(DungeonPoint p, DungeonDoorType type, double hitpoints, double maxHitpoints) {
-        super("", p, null, null, new DungeonComponentStat(null, 10, 10, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.0, 1, 3, 1));
+        super("", p, DungeonEntityRace.ITEM, new DungeonComponentItemStat(null, 10, 10, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.0, 1, null, null, null, 0, DungeonItemCategory.GENERIC, false));
         this.doorType = type;
         state = DungeonDoorState.CLOSED;
-        status.setOwner(this);
-        abilities.put(DungeonAbilityType.DOORMANAGEMENT, true);        
+        getStat().setOwner(this);
+        // abilities.put(DungeonAbilityType.DOORMANAGEMENT, true);        
         setNextAction(DungeonComponent.DUMMY);
 
     }

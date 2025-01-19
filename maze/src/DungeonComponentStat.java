@@ -1,11 +1,13 @@
 // So every *Entity * in the game has a placeholder for the ComponentStat.  
 //This allows for a greater flexibility - ee.g. DungeonItem inherits from Entity and DungeonWeapon from DungeonItem, so a sword should also have mana points.  This is great, when later on the magic system is introduced, or if one want to make breakable weapons etc. etc.
 
-public class DungeonComponentStat extends DungeonComponent {
-    protected double  energy,  recoverEnergy;  // This is for the entity's energy to perform different things (entity action).  The cost of an action is a value between 0-1 with Double.Infinity thrown in, for one-time performed actions.
-    protected double exp;
+public class DungeonComponentStat extends DungeonComponent  {
+    protected double  energy,  recoverEnergy;  // This is for the entity's energy to perform different things (entity action).  The cost of an action is a value between 0-1 with 0.0 thrown in, for one-time performed actions (See World.update())
+    
     protected int hitpoints,  maxHitpoints, mana, maxMana,  str, maxStr,  dex, maxDex, intl, maxIntl, wis, maxWis, con, maxCon, armorClass, thaco; //D&D? :)
-    public int level;
+    protected int level;
+    protected double exp;
+    
     protected boolean isAlive;
     public DungeonComponentStat(DungeonEntity ow, int health, int maxHealth, double energy, double recoverEnergy, int mana, int maxMana, int strength, int maxStrength, int inteligence, int maxInteligence, int constitution, int maxConstitution, int wisdom, int maxWisdom,  double exp, int level, int thaco, int armorClass) {
         super(ow);

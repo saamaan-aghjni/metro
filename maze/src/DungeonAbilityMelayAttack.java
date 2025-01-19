@@ -17,6 +17,7 @@ class DungeonAbilityMelayAttack extends DungeonComponent {
         DungeonEntity equip = owner.getEquipped();
         if(equip.getRace()!= DungeonEntityRace.ITEM) {
             owner.log(Level.WARNING, "You can't do melay with that "+equip.getRace()+" you're holding!");
+            return null;
         }
         var melay = ( (DungeonComponentItemStat)equip.getStat()).getMelayDP();
         DungeonPoint p=owner.getPosition();

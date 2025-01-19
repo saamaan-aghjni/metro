@@ -8,6 +8,7 @@
  */
 enum DungeonItemCategory {
     WEAPON,
+    GENERIC,
     POTION,
     CORPSE,
     BOOK,

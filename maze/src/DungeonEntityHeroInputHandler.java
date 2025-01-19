@@ -21,17 +21,17 @@ public  class DungeonEntityHeroInputHandler {
             case "West":
             case "W":
             case "w":
-                    dir = Direction.WEST;
-                    break;
-                case "East":
-                case "east":
-                case "E":
-                case "e":
-                    dir = Direction.EAST;
-                    break;
-                default:
-                    System.out.println("Huh?");
-                    break;
+                dir = Direction.WEST;
+                break;
+            case "East":
+            case "east":
+            case "E":
+            case "e":
+                dir = Direction.EAST;
+                break;
+            default:
+                System.out.println("Huh?");
+                break;
         }
         return dir;
     }

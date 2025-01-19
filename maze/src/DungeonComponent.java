@@ -1,6 +1,9 @@
+import java.io.Serializable;
+
 /**
  * https://journal.stuffwithstuff.com/2014/07/15/a-turn-based-game-loop/
  **/
+
 enum DungeonAbilityType {
     MOVEMENT,
     INTERACTION,
@@ -20,7 +23,7 @@ record DungeonComponentResult(DungeonComponentResultType result, DungeonAbilityT
 
 }
 
-public  abstract class DungeonComponent {    
+public  abstract class DungeonComponent implements Serializable {    
     protected DungeonEntity owner;
     protected static final DungeonComponent DUMMY =new DungeonComponentDummy();
     public DungeonComponent(DungeonEntity e) {
