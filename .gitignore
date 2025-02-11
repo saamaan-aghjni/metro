@@ -1,0 +1,10 @@
+bin/*
+lib/*
+src/org/*
+*.pdf
+src/lvp.java
+src/views/*
+src/web/*
+src/skills/*
+
+src/LVP/*
