@@ -1,0 +1,175 @@
+{
+"entities": [
+	{
+		"names": "humanRussianNames",
+		"race": "HUMAN",
+		"classes": [
+			{
+				"type": "GENERIC",
+				"abilities": ["MOVEMENT", "ITEMPICKUP", "INTERRACTION", "EQUIP"],
+				"inventory": {
+					"totalWeightAllowed": 10,				
+					"items": [
+								{
+									"name": "knife"
+								}
+							]
+						},
+		
+				"stats": {
+					"energy": 1.0,
+					"recoverEnergy": 0.9,
+					"vision": 5,
+					"maxVision": 5,
+					"hitpoints": 5,
+					"maxHitpoints": 5,
+					"str": 6,
+					"maxStr": 6,
+					"dex": 5,
+					"maxDex": 5,
+					"con": 4,
+					"maxCon": 4,
+					"wis": 4,
+					"maxWis": 8,
+					"intel": 5,
+					"maxIntel": 5,
+					"mana": 10,
+					"maxMana": 10,
+					"thaco": 20,
+					"armourClass": 10,
+					"level": 1
+				}
+			},
+			{
+				"type": "WARRIOR",				
+				"abilities": ["MELAYATTACK"],
+
+				"inventory": {
+					"totalWeightAllowed": 10,
+					"items": [
+						
+					]},
+				"stats": {
+					"hitpoints": 10,
+					"maxHitpoints": 10,
+					"str": 7,
+					"maxStr": 10,
+					"dex": 10,
+					"maxDex": 10,
+					"con": 4,
+					"maxCon": 4,
+					"wis": 4,
+					"maxWis": 8,
+					"intel": 5,
+					"maxIntel": 5,
+					"mana": 4,
+					"maxMana": 4,
+					"thaco": 20,
+					"armourClass": 7,
+					"level": 1,
+					"energy": 1.0,
+					"recoverEnergy": 1.0
+
+				}
+			}
+		] 
+		},
+		{		
+		"race": "ITEM",		
+		"categories": [
+			{
+				"name": "knife",
+
+				"stats": {
+					"type": "WEAPON",
+					"energy": 1.0,
+					"recoverEnergy": 1.0,
+					"weaponType": "MELAY",
+					"hitpoints": 5,
+					"maxHitpoints": 5,
+					"str": 6,
+					"maxStr": 6,
+					"dex": 5,
+					"maxDex": 5,
+					"con": 4,
+					"maxCon": 4,
+					"wis": 4,
+					"maxWis": 8,
+					"intel": 5,
+					"maxIntel": 5,
+					"mana": 10,
+					"maxMana": 10,
+					"thaco": 20,
+					"armourClass": 10,
+					"level": 1,
+					"isPickable": true,
+					"weight": 3,
+					"throwDP": {
+						"dSides": 6,
+						"dNumbers": 2,
+						"negativeDamage": true,
+						"dist": 4
+					},
+					"melayDP": {
+						"dSides": 4,
+						"dNumbers": 1,
+						"negativeDamage": true,
+						"dist": 3
+					},
+					"rangeDP": {
+						"dSides": 6,
+						"dNumbers": 1,
+						"dist": 3,
+						"negativeDamage": true
+					}
+				}
+			},
+			{
+				"name": "default",
+				"stats": {
+					"type": "GENERIC",
+					"energy": 1.0,
+					"recoverEnergy": 1.0,					
+					"hitpoints": 5,
+					"maxHitpoints": 5,
+					"str": 6,
+					"maxStr": 6,
+					"dex": 5,
+					"maxDex": 5,
+					"con": 4,
+					"maxCon": 4,
+					"wis": 4,
+					"maxWis": 8,
+					"intel": 5,
+					"maxIntel": 5,
+					"mana": 10,
+					"maxMana": 10,
+					"thaco": 20,
+					"armourClass": 10,
+					"level": 1,
+					"isPickable": true,
+					"weight": 3,
+					"throwDP": {
+						"dSides": 6,
+						"dNumbers": 2,
+						"negativeDamage": true,
+						"dist": 4
+					},
+					"melayDP": {
+						"dSides": 4,
+						"dNumbers": 1,
+						"negativeDamage": true,
+						"dist": 3
+					},
+					"rangeDP": {
+						"dSides": 6,
+						"dNumbers": 1,
+						"dist": 3,
+						"negativeDamae": true
+					}
+				}
+			}
+		]
+		}
+	]
+}

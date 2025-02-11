@@ -1,6 +1,0 @@
-class MazeSolver
-{
-    protected MazeSolver()
-    {
-    }
-}
