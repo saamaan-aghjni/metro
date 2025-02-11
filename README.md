@@ -18,7 +18,7 @@ The plan is to build a robust and - highly - configurable game, in which the cre
 School project :))  
 
 Okay, but it was supposed to be that. And then I realized what I had signed myself up for. I'm not even sure if I can incorporate all of the features I promised in the document plan.  
-**EDIT**: Well, most of the promised features were delivered - although very fragile in places. Please see [The TODO-List](TODO).  
+**EDIT**: Well, most of the promised features were delivered - although very fragile in places. Please see [The TODO-List](TODO.md).  
 
 ## How to Play?  
 
@@ -35,7 +35,7 @@ The "look/Look/l/L" command should provide you with a descriptive view of your s
 
 ## What Else?  
 
-There's a list of [TODO](TODO) and [German Code Documentation](src/Codedoku/Codedoku.java). The latter is unfortunately compulsory to write!  
+There's a list of [TODO](TODO.md) and [German Code Documentation](src/Codedoku/Codedoku.java). The latter is unfortunately compulsory to write!  
 **EDIT**: English documentation will follow.  
 
 ## Credits/Courtesy  
